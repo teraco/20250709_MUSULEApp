@@ -43,15 +43,13 @@ export function ChatPage() {
         throw new Error('Failed to send message')
       }
 
-      const data = await response.json()
-      
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.content,
-        timestamp: new Date().toISOString(),
-        metadata: data.metadata,
+      const apiResponse = (await response.json()) as { data?: ChatMessage }
+
+      if (!apiResponse.data) {
+        throw new Error('Invalid response from server')
       }
+
+      const assistantMessage: ChatMessage = apiResponse.data
 
       setMessages(prev => [...prev, assistantMessage])
     } catch (error) {
